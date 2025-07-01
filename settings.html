@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="wheelchair.png">
+</head>
+<body>
+  <div class="sidebar">
+    <h2>🦽 EchoWheel</h2>
+    <nav>
+      <ul>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="patient-form.html">Patient Info</a></li>
+        <li><a href="medication.html">Medication</a></li>
+        <li><a href="logs.html">Emergency Logs</a></li>
+        <li><a href="qr.html">QR Health ID</a></li>
+        <li><a href="settings.html" class="active">Settings</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <main>
+    <header>
+      <div class="user-panel">
+        <span>👤 Megha</span> | <span>⚙️ Settings</span>
+        <button onclick="logout()" class="small-btn">🚪 Logout</button>
+      </div>
+    </header>
+
+    <section class="panel">
+      <h2>⚙️ Settings</h2>
+      <p>Customize your EchoWheel preferences below:</p>
+
+      <form class="settings-form">
+        <label for="theme">Theme:</label>
+        <select id="theme" onchange="changeTheme()">
+          <option value="light">☀️ Light</option>
+          <option value="dark">🌙 Dark</option>
+        </select>
+
+        <label for="username">Change Username:</label>
+        <input type="text" id="username" placeholder="Enter new username">
+
+        <button type="button" onclick="saveSettings()">💾 Save Settings</button>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    function logout() {
+      localStorage.clear();
+      window.location.href = "login.html";
+    }
+
+    function saveSettings() {
+      const newUser = document.getElementById("username").value.trim();
+      if (newUser) {
+        const user = { name: newUser };
+        localStorage.setItem("user", JSON.stringify(user));
+        alert("✅ Username updated!");
+      } else {
+        alert("⚠️ Enter a valid username");
+      }
+    }
+
+    function changeTheme() {
+      const theme = document.getElementById("theme").value;
+      document.body.style.backgroundColor = theme === 'dark' ? '#111827' : '#f9fafb';
+      document.body.style.color = theme === 'dark' ? 'white' : 'black';
+    }
+  </script>
+</body>
+</html>

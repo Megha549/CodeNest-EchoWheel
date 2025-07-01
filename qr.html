@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Health ID</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="wheelchair.png">
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>🦽 EchoWheel</h2>
+    <nav>
+      <ul>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="patient-form.html">Patient Info</a></li>
+        <li><a href="medication.html">Medication</a></li>
+        <li><a href="logs.html">Emergency Logs</a></li>
+        <li><a href="qr.html" class="active">QR Health ID</a></li>
+        <li><a href="settings.html">Settings</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <main>
+    <header>
+      <div class="user-panel">
+        <span>👤 Megha</span> | <span>⚙️ Settings</span>
+        <button onclick="logout()" class="small-btn">🚪 Logout</button>
+      </div>
+    </header>
+
+    <section class="panel">
+      <h2>🆘 Generate QR Health ID</h2>
+      <p>This QR code contains the patient's essential health information for emergency use.</p>
+      <button class="small-btn" onclick="generateQR()">Generate QR Code</button>
+      <div id="qrcode" style="margin-top: 20px;"></div>
+      <p style="margin-top: 10px;">❓ Missing patient info? <a href="patient-form.html">Fill here</a></p>
+    </section>
+  </main>
+
+  <script>
+    function logout() {
+      localStorage.clear();
+      window.location.href = "login.html";
+    }
+
+    function generateQR() {
+      const data = JSON.parse(localStorage.getItem("patientData"));
+      if (!data) {
+        alert("❌ No patient data found! Please fill the form first.");
+        return;
+      }
+
+      const info = `👤 ${data.name}, ${data.age} / ${data.gender}\n🩸 Blood: ${data.bloodGroup}\n💉 Diseases: ${data.diseases}\n⚠️ Allergies: ${data.allergies}\n📞 Contact: ${data.contact}\n💊 Last Med: ${data.lastMedication}\n👨‍⚕️ Doctor: ${data.doctor}`;
+
+      const qrCodeContainer = document.getElementById("qrcode");
+      qrCodeContainer.innerHTML = "";
+      new QRCode(qrCodeContainer, {
+        text: info,
+        width: 200,
+        height: 200
+      });
+    }
+  </script>
+</body>
+</html>

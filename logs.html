@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emergency Logs</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="wheelchair.png">
+</head>
+<body>
+
+  <div class="sidebar">
+    <h2>🦽 EchoWheel</h2>
+    <nav>
+      <ul>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="patient-form.html">Patient Info</a></li>
+        <li><a href="medication.html">Medication</a></li>
+        <li><a href="logs.html" class="active">Emergency Logs</a></li>
+        <li><a href="qr.html">QR Health ID</a></li>
+        <li><a href="settings.html">Settings</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <main>
+    <header>
+      <div class="user-panel">
+        <span>👤 Megha</span> | <span>⚙️ Settings</span>
+        <button onclick="logout()" class="small-btn">🚪 Logout</button>
+      </div>
+    </header>
+
+    <section class="panel">
+      <h2>📄 Emergency Activity Logs</h2>
+      <ul id="logList">
+        <li>[10:00 AM] 🚨 Emergency alert sent</li>
+        <li>[09:30 AM] 🛞 Speed normal</li>
+        <li>[09:00 AM] 💊 Reminder: Take medicine</li>
+      </ul>
+    </section>
+  </main>
+
+  <script>
+    function logout() {
+      localStorage.clear();
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>

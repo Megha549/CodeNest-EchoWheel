@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sidebar</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Sidebar -->
+<!-- Sidebar -->
+<!-- sidebar.html -->
+<div class="sidebar" id="sidebar">
+  <h2>🦽 EchoWheel</h2>
+  <nav>
+    <ul>
+      <li><a href="dashboard.html" class="active">Dashboard</a></li>
+      <li><a href="patient-form.html">Patient Info</a></li>
+      <li><a href="medication.html">Medication</a></li>
+      <li><a href="logs.html">Emergency Logs</a></li>
+      <li><a href="qr.html">QR Health ID</a></li>
+      <li><a href="settings.html">Settings</a></li>
+    </ul>
+  </nav>
+</div>
+
+<!-- Toggle button to open/close -->
+<button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+
+
+<script>
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('closed');
+  }
+</script>
+
+</body>
+</html>

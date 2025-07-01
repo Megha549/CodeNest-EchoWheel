@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medication Tracker</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="wheelchair.png">
+</head>
+<body>
+
+  <div class="sidebar">
+    <h2>🦽 EchoWheel</h2>
+    <nav>
+      <ul>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="patient-form.html">Patient Info</a></li>
+        <li><a href="medication.html" class="active">Medication</a></li>
+        <li><a href="logs.html">Emergency Logs</a></li>
+        <li><a href="qr.html">QR Health ID</a></li>
+        <li><a href="settings.html">Settings</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <main>
+    <header>
+      <div class="user-panel">
+        <span>👤 Megha</span> | <span>⚙️ Settings</span>
+        <button onclick="logout()" class="small-btn">🚪 Logout</button>
+      </div>
+    </header>
+
+    <section class="panel">
+      <h2>💊 Medication Tracker</h2>
+      <ul class="med-list">
+        <li>☑️ 9:00 AM – Paracetamol</li>
+        <li>🔔 2:00 PM – BP Medicine (Upcoming)</li>
+      </ul>
+      <button class="small-btn" onclick="addReminder()">➕ Add Reminder</button>
+      <button class="small-btn">🕒 History</button>
+    </section>
+
+    <footer>
+      <h3>🧾 Recent Activity</h3>
+      <ul>
+        <li>[09:00 AM] 💊 Reminder: Take medicine</li>
+      </ul>
+    </footer>
+  </main>
+
+  <script>
+    function logout() {
+      localStorage.clear();
+      window.location.href = "login.html";
+    }
+
+    function addReminder() {
+      const ul = document.querySelector(".med-list");
+      const li = document.createElement("li");
+      li.textContent = "🔔 5:00 PM – Vitamin C";
+      ul.appendChild(li);
+    }
+  </script>
+</body>
+</html>

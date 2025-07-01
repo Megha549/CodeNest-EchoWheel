@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EchoWheel Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="wheelchair.png">
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+  
+</head>
+
+<body>
+  <script>
+    // Prevent unauthenticated access
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) {
+      alert("Please login first.");
+      window.location.href = "login.html";
+    }
+  </script>
+
+  <div class="sidebar">
+    <h2>🦽 EchoWheel</h2>
+    <nav>
+      <ul>
+        <li><a href="dashboard.html" class="active">Dashboard</a></li>
+        <li><a href="patient-form.html">Patient Info</a></li>
+        <li><a href="medication.html">Medication</a></li>
+        <li><a href="logs.html">Emergency Logs</a></li>
+        <li><a href="qr.html">QR Health ID</a></li>
+        <li><a href="settings.html">Settings</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <main>
+    <header>
+      <div class="user-panel">
+        <span>👤 <span id="username"></span></span> | <span>⚙️ Settings</span>
+        <button onclick="logout()" class="small-btn">🚪 Logout</button>
+      </div>
+    </header>
+
+    <div class="grid-container">
+      <!-- Sensor Panel -->
+      <section class="panel sensor">
+        <h2>📡 Sensor Status</h2>
+        <ul>
+          <li>🛞 Speed: <span>1.8 m/s</span></li>
+          <li>↪️ Tilt: <span>Left</span></li>
+          <li>🚧 Obstacle: <span>No</span></li>
+          <li>🚨 Emergency: <span class="alert">Yes</span></li>
+        </ul>
+      </section>
+
+      <!-- Emergency + GPS -->
+      <section class="panel alert-gps">
+        <button class="alert-btn">🔴 Send Emergency Alert</button>
+        <p class="status">✅ Status: Alert Sent!</p>
+
+        <div class="gps-box">
+          <h3>🧭 GPS Location</h3>
+          <p>📍 Connaught Place, Delhi</p>
+          <button class="small-btn">🔄 Refresh</button>
+          <button class="small-btn">🗺️ View Map</button>
+        </div>
+      </section>
+
+      <!-- Medication -->
+      <section class="panel meds">
+        <h2>💊 Medication Tracker</h2>
+        <ul>
+          <li>☑️ 9:00 AM – Paracetamol</li>
+          <li>🔔 2:00 PM – BP Medicine (Upcoming)</li>
+        </ul>
+        <button class="small-btn">➕ Add Reminder</button>
+        <button class="small-btn">🕒 History</button>
+      </section>
+
+      <!-- QR Health -->
+      <section class="panel health-qr">
+        <h2>🆘 QR Health ID</h2>
+        <p>This helps emergency helpers scan & access patient's health info quickly.</p>
+        <button class="small-btn" onclick="generateQR()">Generate Health QR</button>
+        <div id="qrcode" style="margin-top: 10px;"></div>
+        <p style="margin-top: 10px;">❓ Missing patient info? <a href="patient-form.html">Fill here</a></p>
+      </section>
+    </div>
+
+    <footer>
+      <h3>🧾 Recent Activity</h3>
+      <ul>
+        <li>[10:00 AM] 🚨 Emergency alert sent</li>
+        <li>[09:30 AM] 🛞 Speed normal</li>
+        <li>[09:00 AM] 💊 Reminder: Take medicine</li>
+      </ul>
+    </footer>
+  </main>
+
+  <script>
+    // Logout logic
+    function logout() {
+      localStorage.removeItem("user");
+      window.location.href = "login.html";
+    }
+
+    // Display user name
+    const userData = JSON.parse(localStorage.getItem("user"));
+    if (userData) {
+      document.getElementById("username").textContent = userData.name || "User";
+    }
+
+    // Generate QR code logic
+    function generateQR() {
+      const healthData = {
+        name: "Megha Garg",
+        age: 25,
+        bloodGroup: "B+",
+        allergies: "None",
+        emergencyContact: "9876543210"
+      };
+
+      const qrContainer = document.getElementById("qrcode");
+      qrContainer.innerHTML = ""; // clear previous
+
+      new QRCode(qrContainer, {
+        text: JSON.stringify(healthData),
+        width: 150,
+        height: 150
+      });
+    }
+  </script>
+</body>
+
+</html>
