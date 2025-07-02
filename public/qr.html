@@ -7,8 +7,10 @@
   <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/png" href="wheelchair.png">
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+  <script type="module" src="qr.js"></script>
 </head>
 <body>
+  <script type="module" src="js/firebase.js"></script>
   <div class="sidebar">
     <h2>🦽 EchoWheel</h2>
     <nav>
@@ -26,7 +28,7 @@
   <main>
     <header>
       <div class="user-panel">
-        <span>👤 Megha</span> | <span>⚙️ Settings</span>
+       <span>👤 <span id="username"></span></span>| <span>⚙️ Settings</span>
         <button onclick="logout()" class="small-btn">🚪 Logout</button>
       </div>
     </header>
@@ -35,6 +37,8 @@
       <h2>🆘 Generate QR Health ID</h2>
       <p>This QR code contains the patient's essential health information for emergency use.</p>
       <button class="small-btn" onclick="generateQR()">Generate QR Code</button>
+      <button id="downloadQRBtn" class="small-btn" style="margin-top: 10px;">⬇️ Download QR</button>
+
       <div id="qrcode" style="margin-top: 20px;"></div>
       <p style="margin-top: 10px;">❓ Missing patient info? <a href="patient-form.html">Fill here</a></p>
     </section>
@@ -46,23 +50,12 @@
       window.location.href = "login.html";
     }
 
-    function generateQR() {
-      const data = JSON.parse(localStorage.getItem("patientData"));
-      if (!data) {
-        alert("❌ No patient data found! Please fill the form first.");
-        return;
-      }
+ import QRCode from 'https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js';
 
-      const info = `👤 ${data.name}, ${data.age} / ${data.gender}\n🩸 Blood: ${data.bloodGroup}\n💉 Diseases: ${data.diseases}\n⚠️ Allergies: ${data.allergies}\n📞 Contact: ${data.contact}\n💊 Last Med: ${data.lastMedication}\n👨‍⚕️ Doctor: ${data.doctor}`;
+QRCode.toCanvas(document.getElementById('qrCanvas'), JSON.stringify(userData), error => {
+  if (error) console.error(error);
+});
 
-      const qrCodeContainer = document.getElementById("qrcode");
-      qrCodeContainer.innerHTML = "";
-      new QRCode(qrCodeContainer, {
-        text: info,
-        width: 200,
-        height: 200
-      });
-    }
   </script>
 </body>
 </html>

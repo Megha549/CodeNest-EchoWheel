@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register | EchoWheel</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/png" href="wheelchair.png">
+  <script type="module" src="js/firebase.js"></script>
+</head>
+
+<body>
+  <div class="auth-box">
+    <h2>📝 Register</h2>
+    <form id="registerForm">
+      <input type="text" placeholder="First Name" name="FName" required>
+      <input type="text" placeholder="Last Name" name="LName" required>
+      <input type="email" placeholder="Email" name="Email" required>
+      <input type="text" placeholder="Username" name="username" required />
+      <input type="password" placeholder="Password" name="password" required />
+      <button type="submit">Create Account</button>
+    </form>
+    <p>Already have an account? <a href="login.html">Login</a></p>
+  </div>
+
+  <script type="module">
+  import { auth, db } from './js/firebase.js';
+  import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const form = document.getElementById('registerForm');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const email = form.Email.value;
+    const password = form.password.value;
+    const username = form.username.value;
+    const FName = form.FName.value;
+    const LName = form.LName.value;
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Save to Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        firstName: FName,
+        lastName: LName,
+        email: email,
+        username: username,
+        createdAt: new Date().toISOString()
+      });
+
+      alert("✅ Registered successfully!");
+      window.location.href = "login.html";
+    } catch (error) {
+      alert("❌ Error: " + error.message);
+    }
+  });
+</script>
+
+
+</body>
+</html>

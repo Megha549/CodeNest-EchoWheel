@@ -253,3 +253,34 @@ main {
     margin-left: 0 !important;
   }
 }
+
+
+
+.voice-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 14px;
+  border-radius: 50%;
+  font-size: 18px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  cursor: pointer;
+  z-index: 1000;
+}
+.voice-button:hover {
+  background-color: #2563eb;
+}
+
+#stopSoundBtn {
+  visibility: hidden;
+  width: 160px; /* Adjust to match your button width */
+  height: 36px; /* Adjust to match your button height */
+  margin-top: 10px;
+}
+
+#stopSoundBtn.visible {
+  visibility: visible;
+}

@@ -8,6 +8,7 @@
   <link rel="icon" type="image/png" href="wheelchair.png">
 </head>
 <body>
+  <script type="module" src="js/firebase.js"></script>
   <div class="sidebar">
     <h2>🦽 EchoWheel</h2>
     <nav>
@@ -25,7 +26,7 @@
   <main>
     <header>
       <div class="user-panel">
-        <span>👤 Megha</span> | <span>⚙️ Settings</span>
+        <span>👤 <span id="username"></span></span>
         <button onclick="logout()" class="small-btn">🚪 Logout</button>
       </div>
     </header>
