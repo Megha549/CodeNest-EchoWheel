@@ -1,4 +1,5 @@
-import { auth, db } from './js/firebase.js';
+import { auth, db } from './firebase.js';
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import {
   collection,
   query,
@@ -6,32 +7,23 @@ import {
   orderBy,
   limit,
   getDocs
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const reminderContainer = document.getElementById("reminderContainer");
-let currentUser = null;
 
 onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    currentUser = user;
-    fetchLatestReminder(user.uid);
-  } else {
-    reminderContainer.innerHTML = "⚠️ Please login first.";
-  }
-});
+  if (!user) return;
 
-async function fetchLatestReminder(uid) {
   try {
-    const reminderRef = collection(db, "medications");
     const q = query(
-      reminderRef,
-      where("uid", "==", uid),
+      collection(db, "medications"),
+      where("uid", "==", user.uid),
       orderBy("timestamp", "desc"),
       limit(1)
     );
 
     const snapshot = await getDocs(q);
+
     if (!snapshot.empty) {
       const data = snapshot.docs[0].data();
       const formattedTime = formatTime(data.time || "00:00");
@@ -43,7 +35,7 @@ async function fetchLatestReminder(uid) {
     console.error("❌ Error fetching reminder:", error);
     reminderContainer.innerHTML = "⚠️ Failed to load reminder.";
   }
-}
+});
 
 function formatTime(timeString) {
   const [hour, minute] = timeString.split(":").map(Number);

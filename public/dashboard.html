@@ -143,12 +143,17 @@
   });
 
   // 🔓 Logout function
-  window.logout = function () {
-    signOut(auth).then(() => {
-      alert("Logged out");
+window.logout = function () {
+  signOut(auth)
+    .then(() => {
+      alert("✅ Logged out");
       window.location.href = "login.html";
+    })
+    .catch((error) => {
+      console.error("❌ Logout error:", error);
+      alert("Logout failed. Try again.");
     });
-  };
+};
 
   // 📍 Get Location
   window.getLocation = function () {
