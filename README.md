@@ -47,7 +47,7 @@ https://echowheel-9c8ca.web.app
 
 ## 🙋‍♀️ Built By
  Megha Garg | [GitHub](https://github.com/Megha549)
- Bhumi Singh |
+ Bhumi Singh | [GitHub](https://github.com/Bhumi187)
 
 ---
 
