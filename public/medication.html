@@ -1,66 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Medication Tracker</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" type="image/png" href="wheelchair.png">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/png" href="wheelchair.png" />
 </head>
 <body>
+
+<!-- Firebase SDK and App config -->
 <script type="module" src="js/firebase.js"></script>
-  <div class="sidebar">
-    <h2>🦽 EchoWheel</h2>
-    <nav>
-      <ul>
-        <li><a href="dashboard.html">Dashboard</a></li>
-        <li><a href="patient-form.html">Patient Info</a></li>
-        <li><a href="medication.html" class="active">Medication</a></li>
-        <li><a href="logs.html">Emergency Logs</a></li>
-        <li><a href="qr.html">QR Health ID</a></li>
-        <li><a href="settings.html">Settings</a></li>
-      </ul>
-    </nav>
-  </div>
+<script type="module" src="js/medication.js"></script>
+<div class="sidebar">
+  <h2>🦽 EchoWheel</h2>
+  <nav>
+    <ul>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="patient-form.html">Patient Info</a></li>
+      <li><a href="medication.html" class="active">Medication</a></li>
+      <li><a href="logs.html">Emergency Logs</a></li>
+      <li><a href="qr.html">QR Health ID</a></li>
+      <li><a href="settings.html">Settings</a></li>
+    </ul>
+  </nav>
+</div>
 
-  <main>
-    <header>
-      <div class="user-panel">
-        <span>👤 <span id="username"></span></span> | <span>⚙️ Settings</span>
-        <button onclick="logout()" class="small-btn">🚪 Logout</button>
-      </div>
-    </header>
+<main>
+  <header>
+    <div class="user-panel">
+      <span>👤 <span id="username">User</span></span> | <span>⚙️ Settings</span>
+      <button onclick="logout()" class="small-btn">🚪 Logout</button>
+    </div>
+  </header>
 
-    <section class="panel">
-      <h2>💊 Medication Tracker</h2>
-      <ul class="med-list">
-        <li>☑️ 9:00 AM – Paracetamol</li>
-        <li>🔔 2:00 PM – BP Medicine (Upcoming)</li>
-      </ul>
-      <button class="small-btn" onclick="addReminder()">➕ Add Reminder</button>
-      <button class="small-btn">🕒 History</button>
-    </section>
+  <section class="panel">
+    <h2>💊 Medication Tracker</h2>
 
-    <footer>
-      <h3>🧾 Recent Activity</h3>
-      <ul>
-        <li>[09:00 AM] 💊 Reminder: Take medicine</li>
-      </ul>
-    </footer>
-  </main>
+    <form id="medicationForm">
+      <input type="text" id="medName" placeholder="Medicine Name" required />
+      <input type="text" id="dose" placeholder="Dose (e.g., 1 tablet)" required />
+      <input type="time" id="time" required />
+      <button type="submit" class="small-btn">➕ Add Reminder</button>
+    </form>
 
-  <script>
-    function logout() {
+    <ul class="med-list" id="medList"></ul>
+  </section>
+
+  <footer>
+    <h3>🧾 Recent Activity</h3>
+    <ul>
+      <li>[09:00 AM] 💊 Reminder: Take medicine</li>
+    </ul>
+  </footer>
+</main>
+
+<!-- Main Script -->
+<script type="module">
+  import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { db, auth } from "./js/firebase.js"; // ✅ Make sure this also uses full Firestore SDK
+
+  const form = document.getElementById("medicationForm");
+  const medList = document.getElementById("medList");
+
+  // Display stored username
+  document.getElementById("username").textContent = localStorage.getItem("username") || "User";
+
+  // Logout function
+  window.logout = function () {
+    signOut(auth).then(() => {
       localStorage.clear();
       window.location.href = "login.html";
-    }
+    });
+  };
 
-    function addReminder() {
-      const ul = document.querySelector(".med-list");
-      const li = document.createElement("li");
-      li.textContent = "🔔 5:00 PM – Vitamin C";
-      ul.appendChild(li);
+  // Format time to AM/PM
+  function formatTime(timeStr) {
+    const [hour, minute] = timeStr.split(":");
+    const h = parseInt(hour);
+    const ampm = h >= 12 ? "PM" : "AM";
+    const formattedHour = h % 12 === 0 ? 12 : h % 12;
+    return `${formattedHour}:${minute} ${ampm}`;
+  }
+
+  // Add Medication Reminder
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const medName = document.getElementById("medName").value.trim();
+    const dose = document.getElementById("dose").value.trim();
+    const time = document.getElementById("time").value;
+
+    const user = auth.currentUser;
+    if (!user) return alert("Please login to add reminders.");
+
+    try {
+      await addDoc(collection(db, "medications"), {
+        uid: user.uid,
+        medName,
+        dose,
+        time,
+        timestamp: new Date()
+      });
+
+      form.reset();
+      loadMedications(user.uid);
+    } catch (error) {
+      console.error("Failed to add reminder:", error);
+      alert("Failed to save medication. Check console.");
     }
-  </script>
+  });
+
+  // Load all reminders for user
+  async function loadMedications(uid) {
+    medList.innerHTML = "";
+
+    try {
+      const q = query(collection(db, "medications"), where("uid", "==", uid));
+      const querySnapshot = await getDocs(q);
+
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const li = document.createElement("li");
+        li.textContent = `💊 ${formatTime(data.time)} – ${data.medName} (${data.dose})`;
+        medList.appendChild(li);
+      });
+    } catch (err) {
+      console.error("Error loading medications:", err);
+    }
+  }
+
+  // Auto-load reminders after login
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      loadMedications(user.uid);
+    } else {
+      window.location.href = "login.html";
+    }
+  });
+</script>
 </body>
 </html>
