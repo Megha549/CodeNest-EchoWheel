@@ -9,6 +9,8 @@
   <link rel="icon" href="wheelchair.png" type="image/png" />
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
   <script type="module" src="qr.js"></script>
+  <script type="module" src="/js/dashboardReminder.js"></script>
+
   <style>
     /* Fix for stop button layout shifting */
     #stopSoundBtn {
@@ -78,8 +80,9 @@
 <section class="panel meds">
   <h2>💊 Medication Tracker</h2>
   <ul>
-    <li id="reminderContainer">⏳ Loading...</li>
-  </ul>
+  <li id="reminderContainer">Loading reminder...</li>
+</ul>
+  
   <a href="medication.html" class="small-btn">➕ Add Reminder</a>
 
   <button class="small-btn">🕒 History</button>
@@ -255,30 +258,6 @@
       alert("Something went wrong while sending WhatsApp alert.");
     }
   };
-  function formatTime(timeString) {
-  // Optional: add actual formatting if needed
-  return timeString;
-}
-
-        // 💊 Fetch latest medication reminder
-      try {
-      const reminderContainer = document.getElementById("reminderContainer"); // make sure you have this element
-      const reminderRef = collection(db, "reminders");
-      const q = query(reminderRef, where("uid", "==", user.uid));
-      const snapshot = await getDocs(q);
-
-      if (!snapshot.empty) {
-        const data = snapshot.docs[0].data();
-        const formattedTime = formatTime(data.time);
-        reminderContainer.innerHTML = `⏰ ${formattedTime} – ${data.medName}`;
-      } else {
-        reminderContainer.innerHTML = "No upcoming reminders.";
-      }
-    } catch (e) {
-      console.error("❌ Error fetching reminder:", e);
-      reminderContainer.innerHTML = "Failed to load reminder.";
-    }
-
 </script>
 <button class="small-btn" onclick="sendWhatsAppAlert()">📲 WhatsApp Emergency</button>
 
