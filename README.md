@@ -3,6 +3,10 @@
 **EchoWheel** is a smart wheelchair emergency assistant web app built for patient safety and medical emergencies.
 
 ---
+## 📂 Project Pitch Deck
+
+📽️ [View Round 1 PPT Presentation](https://github.com/Megha549/CodeNest-EchoWheel/blob/main/Team_CodeNest.pptx)
+
 
 ## 📌 Features
 
@@ -13,7 +17,6 @@
 - 🆘 QR Code Generation with Patient Health Info
 - 🔐 Firebase Auth (Login/Logout)
 - ☁️ Firestore Database Integration
-
 ---
 
 ## 📷 Screenshots
@@ -27,6 +30,8 @@
 git clone https://github.com/Megha549/CodeNest-EchoWheel.git
 2. Open in VS Code
 3. Run `Live Server` on `dashboard.html`
+or 
+https://echowheel-9c8ca.web.app 
 
 ---
 
@@ -41,8 +46,8 @@ git clone https://github.com/Megha549/CodeNest-EchoWheel.git
 ---
 
 ## 🙋‍♀️ Built By
-
-👩 Megha Garg | [GitHub](https://github.com/Megha549)
+ Megha Garg | [GitHub](https://github.com/Megha549)
+ Bhumi Singh |
 
 ---
 
