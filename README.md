@@ -5,7 +5,7 @@
 ---
 ## 📂 Project Pitch Deck
 
-📽️ [View Round 1 PPT Presentation](https://github.com/Megha549/CodeNest-EchoWheel/blob/main/Team_CodeNest.pptx)
+📽️ [View Round 1 PPT Presentation](https://github.com/Megha549/CodeNest-EchoWheel/blob/main/Team_CodeNest.pdf)
 
 
 ## 📌 Features
