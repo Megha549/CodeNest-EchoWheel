@@ -10,10 +10,20 @@ const q = query(
 );
 
 onSnapshot(q, (snapshot) => {
+  console.log("Fetched snapshot size:", snapshot.size);
   activityList.innerHTML = ""; // Clear old list
+
+  if (snapshot.empty) {
+    activityList.innerHTML = "<li>No recent activities</li>";
+    return;
+  }
+
   snapshot.forEach((doc) => {
     const data = doc.data();
+
+    if (!data.timestamp) return; // skip if missing
     const time = formatTime(data.timestamp.toDate());
+
     const li = document.createElement("li");
     li.innerHTML = `[${time}] ${data.message}`;
     activityList.appendChild(li);
