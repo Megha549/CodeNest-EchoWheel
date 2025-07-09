@@ -21,7 +21,7 @@
 
 ## 📷 Screenshots
 
-![EchoWheel Dashboard](.public/assets/dashboard.png)
+![EchoWheel Dashboard](./assets/dashboard.png)
 
 ---
 
