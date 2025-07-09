@@ -42,10 +42,6 @@
           <option value="light">☀️ Light</option>
           <option value="dark">🌙 Dark</option>
         </select>
-
-        <label for="usernameInput">Change Username:</label>
-        <input type="text" id="usernameInput" placeholder="Enter new username">
-
         <button type="button" onclick="saveSettings()">💾 Save Settings</button>
       </form>
     </section>
@@ -81,17 +77,6 @@
       }
     });
 
-    function saveSettings() {
-      const newUser = document.getElementById("usernameInput").value.trim();
-      if (newUser) {
-        const user = { name: newUser };
-        localStorage.setItem("user", JSON.stringify(user));
-        document.getElementById("username").innerText = newUser;
-        alert("✅ Username updated!");
-      } else {
-        alert("⚠️ Enter a valid username");
-      }
-    }
 
     function logout() {
       localStorage.clear();
