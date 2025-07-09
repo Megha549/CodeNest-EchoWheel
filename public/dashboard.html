@@ -11,7 +11,7 @@
   <script type="module" src="qr.js"></script>
   <script type="module" src="/js/dashboardReminder.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
+  <script type="module" src="js/activity.js"></script>
 <style >
 
     #stopSoundBtn {
@@ -24,6 +24,38 @@
     #stopSoundBtn.visible {
       visibility: visible;
     }
+
+    footer {
+  background-color: #f9fafb;
+  padding: 20px;
+  border-top: 1px solid #ddd;
+}
+
+footer h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+footer ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+footer ul li {
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #334155;
+}
+
+body.dark-mode footer {
+  background-color: #1e293b;
+  color: #e2e8f0;
+}
+
+body.dark-mode footer ul li {
+  color: #cbd5e1;
+}
+
   </style>
 </head>
 
@@ -102,13 +134,12 @@
     </div>
 
     <footer>
-      <h3>🧾 Recent Activity</h3>
-      <ul>
-        <li>[10:00 AM] 🚨 Emergency alert sent</li>
-        <li>[09:30 AM] 🛞 Speed normal</li>
-        <li>[09:00 AM] 💊 Reminder: Take medicine</li>
-      </ul>
-    </footer>
+  <h3>🧾 Recent Activity</h3>
+  <ul id="recent-activity-list">
+    <!-- Recent activities will appear here dynamically -->
+  </ul>
+</footer>
+
   </main>
 
   <script type="module">
