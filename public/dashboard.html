@@ -62,19 +62,19 @@ body.dark-mode footer ul li {
 <body>
   <audio id="alertSound" src="alert.mp3" loop></audio>
 
-<div class="sidebar" id="sidebar">
-  <h2>🦽 EchoWheel</h2>
-  <nav>
-    <ul>
-      <li><a href="dashboard.html" class="active">Dashboard</a></li>
-      <li><a href="patient-form.html">Patient Info</a></li>
-      <li><a href="medication.html">Medication</a></li>
-      <li><a href="logs.html">Activity</a></li>
-      <li><a href="qr.html">QR Health ID</a></li>
-      <li><a href="settings.html">Settings</a></li>
-    </ul>
-  </nav>
-</div>
+  <div class="sidebar" id="sidebar">
+    <h2>🦽 EchoWheel</h2>
+    <nav>
+      <ul>
+        <li><a href="dashboard.html" class="active">Dashboard</a></li>
+        <li><a href="patient-form.html">Patient Info</a></li>
+        <li><a href="medication.html">Medication</a></li>
+        <li><a href="logs.html">Emergency Logs</a></li>
+        <li><a href="qr.html">QR Health ID</a></li>
+        <li><a href="settings.html">Settings</a></li>
+      </ul>
+    </nav>
+  </div>
 
   <main>
     <header>
@@ -281,6 +281,52 @@ body.dark-mode footer ul li {
     };
   </script>
 
+ <script type="module">
+    import { db } from './js/firebase.js';
+    import {
+      collection,
+      query,
+      orderBy,
+      limit,
+      onSnapshot
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const activityList = document.getElementById("recent-activity-list");
+
+    // Query Firestore
+    const q = query(
+      collection(db, "activities"),
+      orderBy("timestamp", "desc"),
+      limit(5)
+    );
+
+    // Listen to changes in activities collection
+    onSnapshot(q, (snapshot) => {
+      activityList.innerHTML = ""; // Clear previous list
+
+      if (snapshot.empty) {
+        activityList.innerHTML = "<li>No recent activities</li>";
+        return;
+      }
+
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        if (!data.timestamp || !data.message) return;
+
+        const time = formatTime(data.timestamp.toDate());
+        const li = document.createElement("li");
+        li.innerHTML = `[${time}] ${data.message}`;
+        activityList.appendChild(li);
+      });
+    });
+
+    // Format time as HH:MM
+    function formatTime(date) {
+      const hrs = String(date.getHours()).padStart(2, "0");
+      const mins = String(date.getMinutes()).padStart(2, "0");
+      return `${hrs}:${mins}`;
+    }
+  </script>
 </body>
 
 </html>
