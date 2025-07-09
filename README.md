@@ -20,10 +20,8 @@
 ---
 
 ## 📷 Screenshots
-## 📸 Dashboard Preview
 
-![EchoWheel Dashboard](./assets/dashboard.png)
-## 📸 Dashboard Preview 
+![EchoWheel Dashboard](.public/assets/dashboard.png)
 
 ---
 
