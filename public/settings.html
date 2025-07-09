@@ -9,6 +9,7 @@
 </head>
 <body>
   <script type="module" src="js/firebase.js"></script>
+
   <div class="sidebar">
     <h2>🦽 EchoWheel</h2>
     <nav>
@@ -26,7 +27,7 @@
   <main>
     <header>
       <div class="user-panel">
-         <span>👤 <span id="username">User</span></span>
+        <span>👤 <span id="username">User</span></span>
         <button onclick="logout()" class="small-btn">🚪 Logout</button>
       </div>
     </header>
@@ -37,13 +38,13 @@
 
       <form class="settings-form">
         <label for="theme">Theme:</label>
-        <select id="theme" onchange="changeTheme()">
+        <select id="theme">
           <option value="light">☀️ Light</option>
           <option value="dark">🌙 Dark</option>
         </select>
 
-        <label for="username">Change Username:</label>
-        <input type="text" id="username" placeholder="Enter new username">
+        <label for="usernameInput">Change Username:</label>
+        <input type="text" id="usernameInput" placeholder="Enter new username">
 
         <button type="button" onclick="saveSettings()">💾 Save Settings</button>
       </form>
@@ -51,26 +52,50 @@
   </main>
 
   <script>
-    function logout() {
-      localStorage.clear();
-      window.location.href = "login.html";
-    }
+    const themeSelect = document.getElementById("theme");
+    const body = document.body;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // Load theme
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "dark") {
+        body.classList.add("dark-mode");
+        themeSelect.value = "dark";
+      }
+
+      // Load username
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+      if (storedUser && storedUser.name) {
+        document.getElementById("username").innerText = storedUser.name;
+      }
+    });
+
+    themeSelect.addEventListener("change", () => {
+      const selected = themeSelect.value;
+      if (selected === "dark") {
+        body.classList.add("dark-mode");
+        localStorage.setItem("theme", "dark");
+      } else {
+        body.classList.remove("dark-mode");
+        localStorage.setItem("theme", "light");
+      }
+    });
 
     function saveSettings() {
-      const newUser = document.getElementById("username").value.trim();
+      const newUser = document.getElementById("usernameInput").value.trim();
       if (newUser) {
         const user = { name: newUser };
         localStorage.setItem("user", JSON.stringify(user));
+        document.getElementById("username").innerText = newUser;
         alert("✅ Username updated!");
       } else {
         alert("⚠️ Enter a valid username");
       }
     }
 
-    function changeTheme() {
-      const theme = document.getElementById("theme").value;
-      document.body.style.backgroundColor = theme === 'dark' ? '#111827' : '#f9fafb';
-      document.body.style.color = theme === 'dark' ? 'white' : 'black';
+    function logout() {
+      localStorage.clear();
+      window.location.href = "login.html";
     }
   </script>
 </body>
