@@ -22,6 +22,7 @@
 ## 📷 Screenshots
 
 ![EchoWheel Dashboard](./assets/dashboard.png)
+![QR Patient info](./assets/qr.png)
 
 ---
 
