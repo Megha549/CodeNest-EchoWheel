@@ -20,7 +20,10 @@
 ---
 
 ## 📷 Screenshots
+## 📸 Dashboard Preview
 
+![EchoWheel Dashboard](./assets/dashboard.png)
+## 📸 Dashboard Preview 
 
 ---
 
