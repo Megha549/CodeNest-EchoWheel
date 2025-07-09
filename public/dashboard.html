@@ -10,9 +10,7 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
   <script type="module" src="qr.js"></script>
   <script type="module" src="/js/dashboardReminder.js"></script>
-
   <style>
-    /* Fix for stop button layout shifting */
     #stopSoundBtn {
       visibility: hidden;
       width: 160px;
@@ -29,20 +27,19 @@
 <body>
   <audio id="alertSound" src="alert.mp3" loop></audio>
 
-<body>
-    <div class="sidebar" id="sidebar">
-  <h2>🦽 EchoWheel</h2>
-  <nav>
-    <ul>
-      <li><a href="dashboard.html" class="active">Dashboard</a></li>
-      <li><a href="patient-form.html">Patient Info</a></li>
-      <li><a href="medication.html">Medication</a></li>
-      <li><a href="logs.html">Emergency Logs</a></li>
-      <li><a href="qr.html">QR Health ID</a></li>
-      <li><a href="settings.html">Settings</a></li>
-    </ul>
-  </nav>
-</div>
+  <div class="sidebar" id="sidebar">
+    <h2>🦽 EchoWheel</h2>
+    <nav>
+      <ul>
+        <li><a href="dashboard.html" class="active">Dashboard</a></li>
+        <li><a href="patient-form.html">Patient Info</a></li>
+        <li><a href="medication.html">Medication</a></li>
+        <li><a href="logs.html">Emergency Logs</a></li>
+        <li><a href="qr.html">QR Health ID</a></li>
+        <li><a href="settings.html">Settings</a></li>
+      </ul>
+    </nav>
+  </div>
 
   <main>
     <header>
@@ -53,6 +50,7 @@
     </header>
 
     <div class="grid-container">
+
       <section class="panel sensor">
         <h2>📡 Sensor Status</h2>
         <ul>
@@ -66,7 +64,6 @@
       <section class="panel alert-gps">
         <button class="alert-btn" onclick="sendEmergencyAlert()">🔴 Play Emergency Alert</button>
         <button id="stopSoundBtn" class="small-btn">🔇 Stop Alert Sound</button>
-
         <p class="status">✅ Status: Waiting for alert...</p>
 
         <div class="gps-box">
@@ -77,27 +74,28 @@
         </div>
       </section>
 
-<section class="panel meds">
-  <h2>💊 Medication Tracker</h2>
-  <ul>
-  <li id="reminderContainer">Loading reminder...</li>
-</ul>
-  
-  <a href="medication.html" class="small-btn">➕ Add Reminder</a>
-
-  <button class="small-btn">🕒 History</button>
-</section>
-
+      <section class="panel meds">
+        <h2>💊 Medication Tracker</h2>
+        <ul>
+          <li id="reminderContainer">Loading reminder...</li>
+        </ul>
+        <a href="medication.html" class="small-btn">➕ Add Reminder</a>
+        <button class="small-btn">🕒 History</button>
+      </section>
 
       <section class="panel health-qr">
         <h2>🆘 QR Health ID</h2>
         <p>This helps emergency helpers scan & access patient's health info quickly.</p>
         <button class="small-btn" onclick="generateQR()">Generate Health QR</button>
         <button id="downloadQRBtn" class="small-btn" style="margin-top: 10px;">⬇️ Download QR</button>
-
         <div id="qrcode" style="margin-top: 10px;"></div>
         <p style="margin-top: 10px;">❓ Missing patient info? <a href="patient-form.html">Fill here</a></p>
       </section>
+
+      <section class="panel whatsapp-alert">
+        <button class="small-btn" onclick="sendWhatsAppAlert()">📲 WhatsApp Emergency</button>
+      </section>
+
     </div>
 
     <footer>
@@ -111,162 +109,143 @@
   </main>
 
   <script type="module">
-  import { auth, db } from './js/firebase.js';
-  import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { collection, addDoc, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { auth, db } from './js/firebase.js';
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { collection, addDoc, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { query, where, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  import {
-    CollectionReference,
-    query,
-    where,
-    orderBy,
-    limit,
-    getDocs
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    const reminderContainer = document.getElementById("reminderContainer");
+    let currentUser = null;
+    let currentLat = null;
+    let currentLon = null;
 
-
-  const reminderContainer = document.getElementById("dashboardReminder");
-  let currentUser = null;
-  let currentLat = null;
-  let currentLon = null;
-
-  // 🔐 Auth check
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      currentUser = user;
-      document.getElementById("username").textContent = user.email;
-      getLocation();
-    } else {
-      alert("Please login first.");
-      window.location.href = "login.html";
-    }
-  });
-
-  // 🔓 Logout function
-window.logout = function () {
-  signOut(auth)
-    .then(() => {
-      alert("✅ Logged out");
-      window.location.href = "login.html";
-    })
-    .catch((error) => {
-      console.error("❌ Logout error:", error);
-      alert("Logout failed. Try again.");
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user;
+        document.getElementById("username").textContent = user.email;
+        getLocation();
+      } else {
+        alert("Please login first.");
+        window.location.href = "login.html";
+      }
     });
-};
 
-  // 📍 Get Location
-  window.getLocation = function () {
-    const locationElement = document.getElementById("location");
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          currentLat = position.coords.latitude;
-          currentLon = position.coords.longitude;
-          locationElement.textContent = `📍 Lat: ${currentLat.toFixed(4)}, Lon: ${currentLon.toFixed(4)}`;
-        },
-        (error) => {
-          console.error("Geolocation error:", error);
-          locationElement.textContent = "❌ Unable to fetch location.";
-        }
-      );
-    } else {
-      locationElement.textContent = "❌ Geolocation not supported.";
-    }
-  };
+    window.logout = function () {
+      signOut(auth)
+        .then(() => {
+          alert("✅ Logged out");
+          window.location.href = "login.html";
+        })
+        .catch((error) => {
+          console.error("❌ Logout error:", error);
+          alert("Logout failed. Try again.");
+        });
+    };
 
-  // 🗺️ Open map
-  window.openMap = function () {
-    if (currentLat && currentLon) {
-      const url = `https://www.google.com/maps?q=${currentLat},${currentLon}`;
-      window.open(url, "_blank");
-    } else {
-      alert("Please wait... location not fetched yet!");
-    }
-  };
+    window.getLocation = function () {
+      const locationElement = document.getElementById("location");
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            currentLat = position.coords.latitude;
+            currentLon = position.coords.longitude;
+            locationElement.textContent = `📍 Lat: ${currentLat.toFixed(4)}, Lon: ${currentLon.toFixed(4)}`;
+          },
+          (error) => {
+            console.error("Geolocation error:", error);
+            locationElement.textContent = "❌ Unable to fetch location.";
+          }
+        );
+      } else {
+        locationElement.textContent = "❌ Geolocation not supported.";
+      }
+    };
 
-  // 🚨 Send emergency alert
-  window.sendEmergencyAlert = async function () {
-    if (!currentUser) return alert("User not logged in.");
-    if (currentLat === null || currentLon === null) return alert("Location not available yet.");
+    window.openMap = function () {
+      if (currentLat && currentLon) {
+        const url = `https://www.google.com/maps?q=${currentLat},${currentLon}`;
+        window.open(url, "_blank");
+      } else {
+        alert("Please wait... location not fetched yet!");
+      }
+    };
 
-    try {
-      const docRef = await addDoc(collection(db, "emergency_alerts"), {
-        userEmail: currentUser.email,
-        timestamp: serverTimestamp(),
-        location: {
-          latitude: currentLat,
-          longitude: currentLon,
-        }
+    window.sendEmergencyAlert = async function () {
+      if (!currentUser) return alert("User not logged in.");
+      if (currentLat === null || currentLon === null) return alert("Location not available yet.");
+
+      try {
+        const docRef = await addDoc(collection(db, "emergency_alerts"), {
+          userEmail: currentUser.email,
+          timestamp: serverTimestamp(),
+          location: {
+            latitude: currentLat,
+            longitude: currentLon,
+          }
+        });
+
+        console.log("🚨 Alert logged with ID:", docRef.id);
+        document.querySelector(".status").textContent = "✅ Status: Alert Sent & Saved!";
+        playAlertSound();
+
+      } catch (e) {
+        console.error("❌ Error saving alert:", e);
+        alert("Failed to save alert.");
+      }
+    };
+
+    function playAlertSound() {
+      const sound = document.getElementById("alertSound");
+      const stopBtn = document.getElementById("stopSoundBtn");
+
+      sound.play().then(() => {
+        stopBtn.classList.add("visible");
+      }).catch(e => {
+        console.warn("🔇 Sound blocked:", e);
       });
-
-      console.log("🚨 Alert logged with ID:", docRef.id);
-      document.querySelector(".status").textContent = "✅ Status: Alert Sent & Saved!";
-      playAlertSound();
-
-    } catch (e) {
-      console.error("❌ Error saving alert:", e);
-      alert("Failed to save alert.");
     }
-  };
 
-  // 🔊 Play alert sound
-  function playAlertSound() {
-    const sound = document.getElementById("alertSound");
-    const stopBtn = document.getElementById("stopSoundBtn");
-
-    sound.play().then(() => {
-      stopBtn.classList.add("visible");
-    }).catch(e => {
-      console.warn("🔇 Sound blocked:", e);
+    document.getElementById("stopSoundBtn").addEventListener("click", () => {
+      const sound = document.getElementById("alertSound");
+      const stopBtn = document.getElementById("stopSoundBtn");
+      sound.pause();
+      sound.currentTime = 0;
+      stopBtn.classList.remove("visible");
     });
-  }
 
-  // 🔇 Stop alert sound
-  document.getElementById("stopSoundBtn").addEventListener("click", () => {
-    const sound = document.getElementById("alertSound");
-    const stopBtn = document.getElementById("stopSoundBtn");
-    sound.pause();
-    sound.currentTime = 0;
-    stopBtn.classList.remove("visible");
-  });
-
-  // ✅ WhatsApp Alert Function
-  window.sendWhatsAppAlert = async function () {
-    if (!currentUser) {
-      alert("User not logged in.");
-      return;
-    }
-
-    try {
-      const patientDoc = await getDoc(doc(db, "patient_info", currentUser.uid));
-      if (!patientDoc.exists()) {
-        alert("❌ No patient info found.");
+    window.sendWhatsAppAlert = async function () {
+      if (!currentUser) {
+        alert("User not logged in.");
         return;
       }
 
-      const data = patientDoc.data();
-      const phone = data.emergencyContactNumber?.trim().replace(/\D/g, "");
-      const name = data.name || "Patient";
-      const bloodGroup = data.bloodGroup || "Unknown";
+      try {
+        const patientDoc = await getDoc(doc(db, "patient_info", currentUser.uid));
+        if (!patientDoc.exists()) {
+          alert("❌ No patient info found.");
+          return;
+        }
 
-      if (!phone || phone.length < 10) {
-        alert("❌ Emergency contact number missing or invalid.");
-        return;
+        const data = patientDoc.data();
+        const phone = data.emergencyContactNumber?.trim().replace(/\D/g, "");
+        const name = data.name || "Patient";
+        const bloodGroup = data.bloodGroup || "Unknown";
+
+        if (!phone || phone.length < 10) {
+          alert("❌ Emergency contact number missing or invalid.");
+          return;
+        }
+
+        const message = `🚨 *EMERGENCY ALERT* 🚨\nName: ${name}\nBlood Group: ${bloodGroup}\n📍 Location: https://maps.google.com/?q=${currentLat},${currentLon}`;
+        const whatsappURL = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+        window.open(whatsappURL, "_blank");
+
+      } catch (e) {
+        console.error("Error sending WhatsApp alert:", e);
+        alert("Something went wrong while sending WhatsApp alert.");
       }
-
-      const message = `🚨 *EMERGENCY ALERT* 🚨\nName: ${name}\nBlood Group: ${bloodGroup}\n📍 Location: https://maps.google.com/?q=${currentLat},${currentLon}`;
-      const whatsappURL = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-      window.open(whatsappURL, "_blank");
-    } catch (e) {
-      console.error("Error sending WhatsApp alert:", e);
-      alert("Something went wrong while sending WhatsApp alert.");
-    }
-  };
-</script>
-<button class="small-btn" onclick="sendWhatsAppAlert()">📲 WhatsApp Emergency</button>
-
-
+    };
+  </script>
 
 </body>
 
