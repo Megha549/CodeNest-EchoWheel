@@ -1,4 +1,4 @@
-# CodeNest-EchoWheel 
+# EchoWheel 
 
 **EchoWheel** is a smart wheelchair emergency assistant web app built for patient safety and medical emergencies.
 
